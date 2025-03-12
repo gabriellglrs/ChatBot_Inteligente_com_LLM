@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --danger-color: #cb1111;
+            --danger-light: #fc2525;
+            --light-bg: #f8f9fa;
+            --user-msg-bg: #dcf8c6;
+            --bot-msg-bg: #f1f0f0;
+            --hover-color: #f1f1f1;
+            --active-color: #e9ecef;
+            --border-radius: 15px;
+            --transition-time: 0.3s;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-image:
+                    radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.05) 0%, rgba(37, 117, 252, 0.05) 90%);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chat-container {
+            max-width: 850px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-time) ease;
+        }
+
+        .chat-container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(30deg);
+        }
+
+        .chat-history {
+            height: 500px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-top: none;
+            border-bottom: none;
+            padding: 20px !important;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 80%;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-time) ease;
+        }
+
+        .message:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .user-message {
+            background-color: var(--user-msg-bg);
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 18px;
+            border-top-left-radius: 18px;
+            border-bottom-left-radius: 18px;
+        }
+
+        .bot-message {
+            background-color: var(--bot-msg-bg);
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 18px;
+            border-top-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+        }
+
+        .chat-input-container {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            padding: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            transition: all var(--transition-time) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, var(--danger-light) 100%);
+            border: none;
+            transition: all var(--transition-time) ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(203, 17, 17, 0.3);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #6c757d;
+            position: absolute;
+            bottom: 2px;
+            right: 10px;
+        }
+
+        .user-message .message-time {
+            right: 10px;
+        }
+
+        .bot-message .message-time {
+            right: 10px;
+        }
+
+        /* Estilo para o scrollbar */
+        .chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Animações melhoradas */
+        .message {
+            animation: fadeIn 0.5s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animação de digitação para mensagens do bot */
+        .bot-message {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            padding-right: 20px;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            margin-right: 5px;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Estilos para o histórico lateral */
+        .sidebar-history {
+            background-color: #ffffff;
+            border-radius: var(--border-radius);
+            height: 650px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-time) ease;
+        }
+
+        .sidebar-history:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(30deg);
+        }
+
+        .conversation-item {
+            border-left: 4px solid transparent;
+            transition: all var(--transition-time) ease;
+            cursor: pointer;
+            margin-bottom: 6px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .conversation-item:hover {
+            background-color: var(--hover-color);
+            border-left: 4px solid var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .conversation-item.active {
+            background-color: var(--active-color);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .conversation-question {
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .conversation-answer {
+            color: #6c757d;
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* New style for conversation date */
+        .conversation-date {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Estilos para formulário e input */
+        .form-control {
+            transition: all var(--transition-time) ease;
+            border: 1.5px solid #ced4da;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);
+            border-color: rgba(106, 17, 203, 0.5);
+        }
+
+        /* Footer com os créditos */
+        .footer {
+            margin-top: 30px;
+            padding: 15px;
+            text-align: center;
+            color: #6c757d;
+            background-color: #ffffff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all var(--transition-time) ease;
+        }
+
+        .footer a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .social-links {
+            margin-top: 10px;
+        }
+
+        .social-links a {
+            margin: 0 10px;
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-links a i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div class="container-fluid py-5">
+    <div class="row main-container">
+        <!-- Sidebar com histórico de conversas -->
+        <div class="col-md-3 mb-4 mb-md-0">
+            <div class="sidebar-history d-flex flex-column">
+                <div class="sidebar-header p-3 text-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Histórico</h5>
+                </div>
+                <div class="p-2 flex-grow-1" id="conversationHistory">
+                    <!-- Histórico de conversas será carregado aqui via Thymeleaf -->
+                    <div th:if="${conversationHistory == null || conversationHistory.isEmpty()}" class="text-center text-muted my-5">
+                        <i class="bi bi-journal-text fs-1 mb-3"></i>
+                        <p>Nenhuma conversa anterior encontrada.</p>
+                    </div>
+                    <div th:each="conv : ${conversationHistory}" class="conversation-item p-3" th:data-id="${conv.id}">
+                        <div class="conversation-question" th:text="${#strings.abbreviate(conv.pergunta, 50)}">Pergunta do usuário</div>
+                        <div class="conversation-answer" th:text="${#strings.abbreviate(conv.respostaIA, 70)}">Resposta da IA</div>
+                        <div class="conversation-date" th:text="${#temporals.format(conv.dataTime, 'dd/MM/yyyy HH:mm')}">Data e hora</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interface principal de chat -->
+        <div class="col-md-9">
+            <div class="chat-container">
+                <!-- Cabeçalho do Chat -->
+                <div class="chat-header p-4 text-center">
+                    <h1 class="mb-2"><i class="bi bi-chat-dots me-2"></i>Chatbot</h1>
+                    <p class="mb-0">Faça perguntas e receba respostas em tempo real</p>
+                </div>
+
+                <!-- Histórico de Mensagens -->
+                <div id="chatHistory" class="chat-history p-4">
+                    <!-- Mensagens serão adicionadas dinamicamente aqui -->
+                </div>
+
+                <!-- Formulário de Entrada -->
+                <div class="chat-input-container">
+                    <form id="chatForm" class="d-flex gap-2" action="/obter-resposta" method="get">
+                        <div class="input-group">
+                            <input type="text" id="pergunta" name="pergunta" class="form-control rounded-pill"
+                                   placeholder="Digite sua pergunta..." required>
+                            <button type="submit" class="btn btn-primary rounded-pill ms-2">
+                                <i class="bi bi-send-fill me-1"></i> Enviar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <button id="resetButton" class="btn btn-danger rounded-pill">
+                            <i class="bi bi-trash me-1"></i> Limpar histórico
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer com créditos do desenvolvedor -->
+            <div class="footer mt-4">
+                <p>Desenvolvido por <span id="dev-name">Seu Nome</span></p>
+                <div class="social-links">
+                    <a href="https://github.com/seu-usuario" target="_blank" id="github-link">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/seu-usuario" target="_blank" id="linkedin-link">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    // Capturar parâmetros da URL e resposta do servidor
+    const urlParams = new URLSearchParams(window.location.search);
+    const perguntaURL = urlParams.get('pergunta');
+    const resposta = /*[[${resposta}]]*/ null;
+
+    // Capturar mensagens anteriores da sessão, se existirem
+    let historico = JSON.parse(localStorage.getItem('chatHistorico') || '[]');
+    const chatHistory = document.getElementById('chatHistory');
+
+    // Função para gerar um ID único para cada mensagem
+    function gerarIdUnico() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    // Função para obter hora atual formatada
+    function getFormattedTime() {
+        const now = new Date();
+        return now.getHours().toString().padStart(2, '0') + ':' +
+            now.getMinutes().toString().padStart(2, '0');
+    }
+
+    // Função para formatar data e hora completa
+    function getFormattedDateTime() {
+        const now = new Date();
+        return now.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Função para mostrar indicador de digitação
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot-message typing';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+        chatHistory.appendChild(typingDiv);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    // Função para remover indicador de digitação
+    function removeTypingIndicator() {
+        const typingDiv = document.getElementById('typing-indicator');
+        if (typingDiv) {
+            typingDiv.remove();
+        }
+    }
+
+    // Função para formatar data e hora da API
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return getFormattedDateTime();
+
+        const date = new Date(dateTimeString);
+        if (isNaN(date)) return getFormattedDateTime();
+
+        return date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Verificar se a mensagem já existe no histórico
+    function mensagemExisteNoHistorico(tipo, texto) {
+        return historico.some(msg => msg.tipo === tipo && msg.texto === texto);
+    }
+
+    // Adicionar resposta ao histórico, se existir
+    if (perguntaURL && resposta && window.location.href.includes('/obter-resposta')) {
+        // Verificar se as mensagens já existem no histórico
+        const perguntaExiste = mensagemExisteNoHistorico('user', perguntaURL);
+        const respostaExiste = mensagemExisteNoHistorico('bot', resposta);
+
+        // Só adiciona se pelo menos uma das mensagens não existir no histórico
+        if (!perguntaExiste || !respostaExiste) {
+            // Adiciona mensagem do usuário se não existir
+            if (!perguntaExiste) {
+                historico.push({
+                    id: gerarIdUnico(),
+                    tipo: 'user',
+                    texto: perguntaURL,
+                    hora: getFormattedTime(),
+                    dataCompleta: getFormattedDateTime()
+                });
+            }
+
+            // Adiciona resposta do bot se não existir
+            if (!respostaExiste) {
+                historico.push({
+                    id: gerarIdUnico(),
+                    tipo: 'bot',
+                    texto: resposta,
+                    hora: getFormattedTime(),
+                    dataCompleta: getFormattedDateTime()
+                });
+            }
+
+            localStorage.setItem('chatHistorico', JSON.stringify(historico));
+        }
+
+        // Limpa a URL para evitar duplicações em recargas
+        if (window.history && window.history.replaceState) {
+            const cleanURL = window.location.protocol + "//" +
+                window.location.host +
+                window.location.pathname;
+            window.history.replaceState({}, document.title, cleanURL);
+        }
+    }
+
+    // Renderizar histórico de mensagens
+    function renderizarHistorico() {
+        chatHistory.innerHTML = '';
+
+        if (historico.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'text-center text-muted my-5';
+            emptyMessage.innerHTML = '<i class="bi bi-chat-dots fs-1 mb-3"></i><p>Nenhuma mensagem ainda. Comece a conversar!</p>';
+            chatHistory.appendChild(emptyMessage);
+            return;
+        }
+
+        historico.forEach((mensagem, index) => {
+            const div = document.createElement('div');
+            div.className = `message ${mensagem.tipo === 'user' ? 'user-message' : 'bot-message'}`;
+            div.textContent = mensagem.texto;
+
+            // Adicionar horário da mensagem
+            if (mensagem.hora) {
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'message-time';
+                timeSpan.textContent = mensagem.hora;
+                div.appendChild(timeSpan);
+            }
+
+            // Adicionar a animação com delay crescente para cada mensagem
+            div.style.animationDelay = (index * 0.1) + 's';
+
+            chatHistory.appendChild(div);
+        });
+
+        // Scroll para a última mensagem
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    renderizarHistorico();
+
+    // Botão para limpar histórico
+    document.getElementById('resetButton').addEventListener('click', function() {
+        // Confirmação antes de apagar
+        if (confirm('Tem certeza que deseja limpar todo o histórico de conversa?')) {
+            localStorage.removeItem('chatHistorico');
+            historico = [];
+            renderizarHistorico();
+        }
+    });
+
+    // Funcionalidade para carregar conversa ao clicar no histórico lateral
+    document.querySelectorAll('.conversation-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const conversationId = this.getAttribute('data-id');
+
+            // Marcar como ativo
+            document.querySelectorAll('.conversation-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            // Mostrar indicador de digitação enquanto carrega
+            showTypingIndicator();
+
+            // Buscar a conversa do servidor
+            fetch(`/api/conversation/${conversationId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Não foi possível carregar a conversa');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Remover indicador de digitação
+                    removeTypingIndicator();
+
+                    // Limpar histórico atual
+                    historico = [];
+
+                    // Adicionar pergunta e resposta da conversa selecionada
+                    historico.push({
+                        id: gerarIdUnico(),
+                        tipo: 'user',
+                        texto: data.pergunta,
+                        hora: getFormattedTime(),
+                        dataCompleta: data.dataTime ? formatDateTime(data.dataTime) : getFormattedDateTime()
+                    });
+                    historico.push({
+                        id: gerarIdUnico(),
+                        tipo: 'bot',
+                        texto: data.respostaIA,
+                        hora: getFormattedTime(),
+                        dataCompleta: data.dataTime ? formatDateTime(data.dataTime) : getFormattedDateTime()
+                    });
+
+                    // Renderizar o novo histórico
+                    renderizarHistorico();
+
+                    // Atualizar a URL sem recarregar a página
+                    if (window.history && window.history.replaceState) {
+                        const cleanURL = window.location.protocol + "//" +
+                            window.location.host +
+                            window.location.pathname;
+                        window.history.replaceState({}, document.title, cleanURL);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar conversa:', error);
+                    removeTypingIndicator();
+                    alert('Não foi possível carregar esta conversa');
+                });
+        });
+    });
+
+    // Animação de envio de formulário
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+        const pergunta = document.getElementById('pergunta').value.trim();
+        if (pergunta) {
+            // Verificar se a pergunta já existe no histórico atual
+            if (!mensagemExisteNoHistorico('user', pergunta)) {
+                // Adicionar mensagem do usuário imediatamente com ID único
+                historico.push({
+                    id: gerarIdUnico(),
+                    tipo: 'user',
+                    texto: pergunta,
+                    hora: getFormattedTime(),
+                    dataCompleta: getFormattedDateTime()
+                });
+                localStorage.setItem('chatHistorico', JSON.stringify(historico));
+                renderizarHistorico();
+            }
+
+            // Mostrar indicador de digitação
+            showTypingIndicator();
+        }
+    });
+
+    // Atualize os dados do desenvolvedor - substitua com seus dados reais
+    document.getElementById('dev-name').textContent = "Gabriel lucas rodrigues souza";
+    document.getElementById('github-link').href = "https://github.com/gabriellglrs";
+    document.getElementById('linkedin-link').href = "https://www.linkedin.com/in/gabriellglrs/";
+</script>
+</body>
+</html>
