@@ -175,7 +175,6 @@
             right: 10px;
         }
 
-        /* Estilo para o scrollbar */
         .chat-history::-webkit-scrollbar {
             width: 8px;
         }
@@ -194,7 +193,6 @@
             background: #555;
         }
 
-        /* Animações melhoradas */
         .message {
             animation: fadeIn 0.5s;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -211,7 +209,6 @@
             }
         }
 
-        /* Animação de digitação para mensagens do bot */
         .bot-message {
             position: relative;
             overflow: hidden;
@@ -249,14 +246,15 @@
             }
         }
 
-        /* Estilos para o histórico lateral */
+        /* Estilos ajustados para o histórico lateral */
         .sidebar-history {
             background-color: #ffffff;
             border-radius: var(--border-radius);
             height: 650px;
-            overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all var(--transition-time) ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-history:hover {
@@ -267,7 +265,10 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             border-radius: 15px 15px 0 0;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 1rem;
             overflow: hidden;
         }
 
@@ -282,12 +283,18 @@
             transform: rotate(30deg);
         }
 
+        .p-2.flex-grow-1 {
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
         .conversation-item {
             border-left: 4px solid transparent;
             transition: all var(--transition-time) ease;
             cursor: pointer;
             margin-bottom: 6px;
             border-radius: 0 8px 8px 0;
+            position: relative;
         }
 
         .conversation-item:hover {
@@ -306,6 +313,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            padding-right: 30px;
         }
 
         .conversation-answer {
@@ -314,9 +322,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            padding-right: 30px;
         }
 
-        /* New style for conversation date */
         .conversation-date {
             font-size: 0.75rem;
             color: #6c757d;
@@ -324,9 +332,29 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            padding-right: 30px;
         }
 
-        /* Estilos para formulário e input */
+        .delete-conversation {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--danger-color);
+            transition: all var(--transition-time) ease;
+            opacity: 0.7;
+            background: none;
+            border: none;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .delete-conversation:hover {
+            opacity: 1;
+            background-color: rgba(203, 17, 17, 0.1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
         .form-control {
             transition: all var(--transition-time) ease;
             border: 1.5px solid #ced4da;
@@ -337,7 +365,6 @@
             border-color: rgba(106, 17, 203, 0.5);
         }
 
-        /* Footer com os créditos */
         .footer {
             margin-top: 30px;
             padding: 15px;
@@ -395,6 +422,9 @@
                         <div class="conversation-question" th:text="${#strings.abbreviate(conv.pergunta, 50)}">Pergunta do usuário</div>
                         <div class="conversation-answer" th:text="${#strings.abbreviate(conv.respostaIA, 70)}">Resposta da IA</div>
                         <div class="conversation-date" th:text="${#temporals.format(conv.dataTime, 'dd/MM/yyyy HH:mm')}">Data e hora</div>
+                        <button class="delete-conversation" th:data-id="${conv.id}" title="Excluir conversa">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -428,7 +458,7 @@
 
                     <div class="text-center mt-3">
                         <button id="resetButton" class="btn btn-danger rounded-pill">
-                            <i class="bi bi-trash me-1"></i> Limpar histórico
+                            <i class="bi bi-trash me-1"></i> Limpar conversa
                         </button>
                     </div>
                 </div>
@@ -617,7 +647,13 @@
 
     // Funcionalidade para carregar conversa ao clicar no histórico lateral
     document.querySelectorAll('.conversation-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
+            // Verifique se o clique foi no botão de exclusão
+            if (e.target.closest('.delete-conversation')) {
+                // Não faça nada aqui, pois o evento será tratado no listener específico
+                return;
+            }
+
             const conversationId = this.getAttribute('data-id');
 
             // Marcar como ativo
@@ -676,6 +712,57 @@
                     removeTypingIndicator();
                     alert('Não foi possível carregar esta conversa');
                 });
+        });
+    });
+
+    // Adicionar evento de clique para o botão de exclusão
+    document.querySelectorAll('.delete-conversation').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // Impede que o evento de clique da conversa seja acionado
+
+            const conversationId = this.getAttribute('data-id');
+
+            // Confirmação antes de excluir
+            if (confirm('Tem certeza que deseja excluir esta conversa?')) {
+                // Mostrar algum indicador de carregamento (opcional)
+                this.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+                this.disabled = true;
+
+                // Chamada para o endpoint de exclusão
+                fetch(`/api/conversation/${conversationId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Não foi possível excluir a conversa');
+                        }
+
+                        // Remover o elemento da lista
+                        const conversationItem = this.closest('.conversation-item');
+                        conversationItem.style.height = conversationItem.offsetHeight + 'px';
+                        conversationItem.style.opacity = '0';
+                        conversationItem.style.marginTop = '-' + conversationItem.offsetHeight + 'px';
+
+                        // Após a animação, remover o elemento do DOM
+                        setTimeout(() => {
+                            conversationItem.remove();
+
+                            // Se não houver mais conversas, mostrar mensagem
+                            if (document.querySelectorAll('.conversation-item').length === 0) {
+                                const emptyMessage = document.createElement('div');
+                                emptyMessage.className = 'text-center text-muted my-5';
+                                emptyMessage.innerHTML = '<i class="bi bi-journal-text fs-1 mb-3"></i><p>Nenhuma conversa anterior encontrada.</p>';
+                                document.getElementById('conversationHistory').appendChild(emptyMessage);
+                            }
+                        }, 300);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao excluir conversa:', error);
+                        this.innerHTML = '<i class="bi bi-trash"></i>';
+                        this.disabled = false;
+                        alert('Não foi possível excluir esta conversa');
+                    });
+            }
         });
     });
 

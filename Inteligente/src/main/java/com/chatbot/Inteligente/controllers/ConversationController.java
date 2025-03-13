@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,6 +47,17 @@ public class ConversationController {
           try {
                ConversationDTO conversation = chatbotService.findConversationById(id);
                return ResponseEntity.ok(conversation);
+          } catch (Exception e) {
+               return ResponseEntity.notFound().build();
+          }
+     }
+
+     @DeleteMapping("/api/conversation/{id}")
+     @ResponseBody
+     public ResponseEntity<Void> deleteConversation(@PathVariable Long id) {
+          try {
+               chatbotService.deleteConversationById(id);
+               return ResponseEntity.ok().build();
           } catch (Exception e) {
                return ResponseEntity.notFound().build();
           }

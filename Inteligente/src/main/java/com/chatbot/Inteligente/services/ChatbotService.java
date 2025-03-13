@@ -93,4 +93,8 @@ public class ChatbotService {
                   .map(ConversationDTO::new)
                   .orElseThrow(() -> new RuntimeException("Conversa não encontrada"));
      }
+
+     public void deleteConversationById(Long id) {
+          repository.deleteById(id);
+     }
 }
