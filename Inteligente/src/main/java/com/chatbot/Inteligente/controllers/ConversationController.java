@@ -1,6 +1,6 @@
 package com.chatbot.Inteligente.controllers;
 
-import com.chatbot.Inteligente.DTO.ConversationDTO;
+import com.chatbot.Inteligente.DTO.ConversationResponseDTO;
 import com.chatbot.Inteligente.services.ChatbotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +16,10 @@ public class ConversationController {
 
      private final ChatbotService chatbotService;
 
-     @GetMapping("/")
+     @GetMapping("/home")
      public String index(Model model) {
           // Carregar o histórico de conversas aqui
-          List<ConversationDTO> conversationHistory = chatbotService.findAllConversation();
+          List<ConversationResponseDTO> conversationHistory = chatbotService.findAllConversation();
           model.addAttribute("conversationHistory", conversationHistory);
           return "index"; // Retorna a página inicial (index.html)
      }
@@ -34,7 +34,7 @@ public class ConversationController {
           }
 
           // Adicionar o histórico de conversas ao model para manter na página após o redirecionamento
-          List<ConversationDTO> conversationHistory = chatbotService.findAllConversation();
+          List<ConversationResponseDTO> conversationHistory = chatbotService.findAllConversation();
           model.addAttribute("conversationHistory", conversationHistory);
 
           return "index"; // Retorna para a mesma página com a resposta
@@ -43,9 +43,9 @@ public class ConversationController {
      // Adicionar um endpoint para obter uma conversa específica por ID
      @GetMapping("/api/conversation/{id}")
      @ResponseBody
-     public ResponseEntity<ConversationDTO> getConversationById(@PathVariable Long id) {
+     public ResponseEntity<ConversationResponseDTO> getConversationById(@PathVariable Long id) {
           try {
-               ConversationDTO conversation = chatbotService.findConversationById(id);
+               ConversationResponseDTO conversation = chatbotService.findConversationById(id);
                return ResponseEntity.ok(conversation);
           } catch (Exception e) {
                return ResponseEntity.notFound().build();

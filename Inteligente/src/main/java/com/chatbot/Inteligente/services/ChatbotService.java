@@ -1,7 +1,7 @@
 package com.chatbot.Inteligente.services;
 
-import com.chatbot.Inteligente.DTO.ConversationDTO;
-import com.chatbot.Inteligente.models.Conversation;
+import com.chatbot.Inteligente.DTO.ConversationResponseDTO;
+import com.chatbot.Inteligente.entities.Conversation;
 import com.chatbot.Inteligente.repositories.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,14 +82,14 @@ public class ChatbotService {
           }
      }
 
-     public List<ConversationDTO> findAllConversation() {
+     public List<ConversationResponseDTO> findAllConversation() {
           var conversation = repository.findAll();
-         return conversation.stream().map(ConversationDTO::new).toList();
+         return conversation.stream().map(ConversationResponseDTO::new).toList();
      }
 
-     public ConversationDTO findConversationById(Long id) {
+     public ConversationResponseDTO findConversationById(Long id) {
           return repository.findById(id)
-                  .map(ConversationDTO::new)
+                  .map(ConversationResponseDTO::new)
                   .orElseThrow(() -> new RuntimeException("Conversa não encontrada"));
      }
 

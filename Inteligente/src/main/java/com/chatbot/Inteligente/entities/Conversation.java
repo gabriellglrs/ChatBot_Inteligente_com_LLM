@@ -1,8 +1,7 @@
-package com.chatbot.Inteligente.models;
+package com.chatbot.Inteligente.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "tb_conversation")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +29,10 @@ public class Conversation {
      @Column(name = "data_hora")
      private LocalDateTime dataTime = LocalDateTime.now();
 
+     @ManyToOne
+     @JoinColumn(name = "user_id")
+     private User user;
+
      public Conversation(String pergunta, String respostaIA) {
           Pergunta = pergunta;
           this.respostaIA = respostaIA;
@@ -39,4 +43,5 @@ public class Conversation {
           Pergunta = pergunta;
           this.respostaIA = respostaIA;
      }
+
 }
