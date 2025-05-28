@@ -1,3 +1,6 @@
+
+![LinkedIn cover - 22](https://github.com/user-attachments/assets/4ad104f7-2636-4beb-b0a0-21a7f2c962a0)
+
 # Chatbot Inteligente 🤖
 
 Um chatbot inteligente desenvolvido com Spring Boot que integra com modelos de IA local através do Ollama, oferecendo uma interface web para conversas e gerenciamento de usuários.
