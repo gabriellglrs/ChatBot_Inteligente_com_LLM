@@ -1,5 +1,5 @@
+![LinkedIn cover - 26](https://github.com/user-attachments/assets/8f1ab043-01bb-41e1-9c17-64eda8b495bb)
 
-![LinkedIn cover - 22](https://github.com/user-attachments/assets/4ad104f7-2636-4beb-b0a0-21a7f2c962a0)
 
 # Chatbot Inteligente 🤖
 
@@ -191,6 +191,19 @@ Se você encontrar algum problema ou tiver dúvidas:
 2. Consulte os logs da aplicação para erros específicos
 3. Abra uma issue no repositório do projeto
 
+## Autor
+ Gabriel lucas rodrigues souza
+ <br>
+LinkedIn: https://www.linkedin.com/in/gabriellglrs/
+
 ---
 
 Desenvolvido com ❤️ usando Spring Boot e Ollama
+<br>
+<br>
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ed7208b8-6bdc-4c82-98aa-8c8cb9c1428f" height="150"/>
+</div>
+
+
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=4C89F8&height=120&section=footer"/>
