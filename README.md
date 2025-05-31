@@ -3,14 +3,14 @@
 
 # Chatbot Inteligente 🤖
 
-Um chatbot inteligente desenvolvido com Spring Boot que integra com modelos de IA local através do Ollama, oferecendo uma interface web para conversas e gerenciamento de usuários.
+Um chatbot inteligente desenvolvido com Spring AI que integra com modelos de IA local através do Ollama, oferecendo uma interface web para conversas e gerenciamento de usuários.
 
 ## 📋 Características
 
 - **Interface Web Intuitiva**: Interface limpa e responsiva para interação com o chatbot
 - **Autenticação e Autorização**: Sistema completo de login/registro com Spring Security
 - **Histórico de Conversas**: Armazenamento e visualização do histórico completo de conversas
-- **Integração com IA Local**: Utiliza Ollama para processamento de linguagem natural
+- **Integração com IA Local**: Utiliza Ollama para processamento de linguagem natural e Spring AI
 - **Arquitetura RESTful**: APIs REST para operações CRUD de conversas
 - **Persistência de Dados**: Banco de dados para usuários e conversas
 
@@ -18,6 +18,7 @@ Um chatbot inteligente desenvolvido com Spring Boot que integra com modelos de I
 
 - **Java 17+**
 - **Spring Boot 3.x**
+- **Spring AI** - Integração com modelos de IA (LLMs) locais ou externos
 - **Spring Security** - Autenticação e autorização
 - **Spring Data JPA** - Persistência de dados
 - **Thymeleaf** - Template engine para frontend
@@ -198,7 +199,7 @@ LinkedIn: https://www.linkedin.com/in/gabriellglrs/
 
 ---
 
-Desenvolvido com ❤️ usando Spring Boot e Ollama
+Desenvolvido com ❤️ usando Spring AI e Ollama
 <br>
 <br>
 <div align="center">
