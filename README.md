@@ -6,6 +6,9 @@
 Um chatbot inteligente desenvolvido com Spring AI que integra com modelos de IA local através do Ollama, oferecendo uma interface web para conversas e gerenciamento de usuários.
 <br>
 <br>
+![image](https://github.com/user-attachments/assets/11046965-60b1-490a-b454-a876ee58c7c1)
+<br>
+<br>
 ![image](https://github.com/user-attachments/assets/afc4e0e9-98b1-4f5f-9b5a-3e5e61860483)
 
 ## 📋 Características
